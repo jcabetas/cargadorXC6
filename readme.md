@@ -85,3 +85,4 @@ Cargador notifica Isp con mosquitto_pub -h 10.244.168.149 -t "kona/state" -u joa
 
 Para ajustar Isp: mosquitto_pub -h 10.244.168.149 -t "kona/set/isp" -u joaquin -P JeW31ZT9Rdx -m '{13'
 
+Tambien psp de forma similar
