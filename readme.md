@@ -10,15 +10,16 @@ Se comunica con el cargador (cpu STM32) por puerto serie, usando normalmente JSO
 ## Topics que escucha
 *  Configuracion, topic "**Kona**/config". La configuración del cargador se hace enviando a este topic un JSON con los siguientes valores (puede haber cambios parciales):
     * imax, imin, numfases, numcontactores, paroconcontactores, modelomedidor, idmodbus, baudmodbus
-*  Topic "homeassistant/status". Se recibe rearranques de home assistant cuando reciba "online". En este caso Xiao enviará el archivo de configuración de home assistant al topic "homeassistant/device/**Kona**/cargmqtt/config". La configuración dependerá del número de fases
+*  Topic "homeassistant/status". Se recibe rearranques de home assistant cuando reciba "online" (solo lo atenderemos 20s después del arranque, ya que al suscribirse lo va a recibir de inmediato ese mensaje)
+   Cuando reciba, Xiao enviará el archivo de configuración de home assistant al topic "homeassistant/device/**Kona**/cargmqtt/config". La configuración dependerá del número de fases
 *  Topic "Kona/isp/set", cambio de setpoint, puede ser por:
     * Isp (enviando un json {"isp":"13.2"})
     * Psp (idem con json {"psp":"7500.1"}
 
 ## Procedimiento de arranque
-*  Cuando Xiao arranque, enviará por puerto serie un json al STM32 indicando {"stm32":"arranque"}
-*  El STM32 contestará con otro JSON indicando numero de fases {"xiao":"arranque","numfases":"1"}
-* Si en 2 segundos STM32 no ha contestado, vuelve a enviar peticion de arranque
+*  Cuando Xiao arranque, enviará por puerto serie un json al STM32 indicando {"orden":"diestado"}
+*  El STM32 contestará con otro JSON indicando numero de fases {"orden":"estado","numfases":"1"}
+*  Si en 2 segundos STM32 no ha contestado, vuelve a enviar peticion de arranque
 
 ## Envio de status a homeassistant
 *  Cada vez que cambie un estado o medida, STM32 enviara un json que, si no contiene "xiao", se enviará al topic "Kona/status"

@@ -19,11 +19,12 @@ void mataSensor(void);
 void initSensor();
 void conectaHA(void);
 void vLeerSerie(void *pvParametros);
-void PublishMqtt(char *topicStatus, char *msg, bool retain);
+void configuraPmax(void);
+//void PublishMqtt(char *topicStatus, char *msg, bool retain);
 
 struct msgPublish_t
 {
-    char topic; // 'i':isp, 'c':coche
+    char topic[15]; 
     char msg[ 15 ];
 };
 

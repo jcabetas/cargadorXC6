@@ -33,6 +33,7 @@ bool fechaAjustada = false;
 TaskHandle_t xHandleSerial = NULL;
 static uint8_t parametroTaskSerial;
 QueueHandle_t xQueuSendMqtt;
+uint16_t segArranque = 0; //  cuenta hasta 1000...
 
 void parpadeoLed(uint8_t numVeces)
 {
@@ -53,7 +54,7 @@ void setup()
 {
   // Serial0
   Serial.begin(115200);
-  while (!Serial)  {  }
+//  while (!Serial)  {  }
   Serial.printf("Parpadeo leds\r\n");
   parpadeoLed(8);
   Serial1.begin(BAUD,SERIAL_8N1,RX_PIN,TX_PIN);
@@ -64,8 +65,8 @@ void setup()
   }
   xQueuSendMqtt = xQueueCreate(10, sizeof(msgPublish_t));
   setupWifi(false, LittleFS);
-  initMqtt();
   xTaskCreate(vLeerSerie, "leerSerie", 20000, &parametroTaskSerial, 1, &xHandleSerial); 
+  initMqtt();
   //initSensor();
   initBotonBoot();
 #if USAR_WATCHDOG
@@ -89,4 +90,6 @@ void loop()
   esp_task_wdt_reset();
   #endif
   vTaskDelay(pdMS_TO_TICKS(5000));
+  if (segArranque<1000)
+      segArranque += 5;
 }

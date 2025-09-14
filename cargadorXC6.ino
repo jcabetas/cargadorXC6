@@ -32,12 +32,15 @@ bool shouldSaveConfig = true;
 char strBrokerIP[30] = "192.168.1.48";
 char userMqtt[30] = "joaquin";
 char passwMqtt[30] = "JeW31ZT9Rdx";
-char iMax[10] = "16";
-char numFases[10] = "1";
-char numReles[10] = "1";
 char nombreWB[30] = "Cargador";
 
-extern char topicStatus[30];
+uint8_t numFases = 0;  // lo actualizará STM32, hay que esperar
+float iMin = 0.0f;
+float iMax = 16.0f;
+float pMin = 0.0f;
+float pMax = 3600.0f;;
+uint8_t numContactores;
+
 
 // Define WiFiManager Object
 WiFiManager wm;
@@ -53,9 +56,6 @@ void saveConfigFile(fs::FS &fs)
   json["strBrokerIP"] = strBrokerIP;
   json["userMqtt"] = userMqtt;
   json["passwMqtt"] = passwMqtt;
-  json["iMax"] = iMax;
-  json["numFases"] = numFases;
-  json["numReles"] = numReles;
   json["nombreWB"] = nombreWB;
    
   Serial.printf("JSON a guardar:\r\n");
@@ -101,7 +101,7 @@ bool loadConfigFile(fs::FS &fs)
   configFile.close();
   serializeJsonPretty(json, Serial);
   Serial.println("------------------");
-  if (!json["strBrokerIP"] || !json["userMqtt"] || !json["passwMqtt"] || !json["iMax"] || !json["numFases"] || !json["numReles"]  || !json["nombreWB"] )
+  if (!json["strBrokerIP"] || !json["userMqtt"] || !json["passwMqtt"] || !json["nombreWB"] )
   {
       Serial.println("  FALTAN DATOS!!");
       vTaskDelay(pdMS_TO_TICKS(100));
@@ -110,11 +110,8 @@ bool loadConfigFile(fs::FS &fs)
   strncpy(strBrokerIP, json["strBrokerIP"], sizeof(strBrokerIP));
   strncpy(userMqtt, json["userMqtt"], sizeof(userMqtt));
   strncpy(passwMqtt, json["passwMqtt"], sizeof(passwMqtt));
-  strncpy(iMax, json["iMax"], sizeof(iMax));
-  strncpy(numFases, json["numFases"], sizeof(numFases));
-  strncpy(numReles, json["numReles"], sizeof(numReles));
   strncpy(nombreWB, json["nombreWB"], sizeof(nombreWB));
-  Serial.printf("Leido. IP broker:%s MQTT user:%s passwd:%s iMax:%s numFases:%s numReles:%s nombreWB:%s\r\n", strBrokerIP, userMqtt, passwMqtt,iMax,numFases,numReles,nombreWB);
+  Serial.printf("Leido. IP broker:%s MQTT user:%s passwd:%s nombreWB:%s\r\n", strBrokerIP, userMqtt, passwMqtt, nombreWB);
   vTaskDelay(pdMS_TO_TICKS(100));
   return true;
 }
@@ -180,17 +177,11 @@ void setupWifi(bool forzar, fs::FS &fs)
   WiFiManagerParameter custom_text_box_strIP("strBrokerIP", "Broker IP", strBrokerIP, sizeof(strBrokerIP));
   WiFiManagerParameter custom_text_box_userMqtt("userMqtt", "MQTT user", userMqtt, sizeof(userMqtt));
   WiFiManagerParameter custom_text_box_passwMqtt("passwMqtt", "MQTT passwd", passwMqtt, sizeof(passwMqtt));
-  WiFiManagerParameter custom_text_box_imax("iMax", "iMax", iMax, sizeof(iMax));
-  WiFiManagerParameter custom_text_box_numFases("numFases", "numFases", numFases, sizeof(numFases));
-  WiFiManagerParameter custom_text_box_numReles("numReles", "numReles", numReles, sizeof(numReles));
   WiFiManagerParameter custom_text_box_nombreWB("nombreWB", "nombreWB", nombreWB, sizeof(nombreWB));
 
   wm.addParameter(&custom_text_box_strIP);
   wm.addParameter(&custom_text_box_userMqtt);
   wm.addParameter(&custom_text_box_passwMqtt);
-  wm.addParameter(&custom_text_box_imax);
-  wm.addParameter(&custom_text_box_numFases);
-  wm.addParameter(&custom_text_box_numReles);
   wm.addParameter(&custom_text_box_nombreWB);
 
   wm.setConfigPortalTimeout(120);  // para que no se quede pillado en el portal si no hay nadie atento (lo normal)
@@ -202,11 +193,8 @@ void setupWifi(bool forzar, fs::FS &fs)
       strncpy(strBrokerIP, custom_text_box_strIP.getValue(), sizeof(strBrokerIP));
       strncpy(userMqtt, custom_text_box_userMqtt.getValue(), sizeof(userMqtt));
       strncpy(passwMqtt, custom_text_box_passwMqtt.getValue(), sizeof(passwMqtt));
-      strncpy(iMax, custom_text_box_imax.getValue(), sizeof(iMax));
-      strncpy(numFases, custom_text_box_numFases.getValue(), sizeof(numFases));
-      strncpy(numReles, custom_text_box_numReles.getValue(), sizeof(numReles));
       strncpy(nombreWB, custom_text_box_nombreWB.getValue(), sizeof(nombreWB));
-      Serial.printf("strBrokerIP:%s userMqtt:%s passwMqtt:%s iMax:%s numFases:%s numReles:%s nombreWB:%s\r\n", strBrokerIP, userMqtt, passwMqtt,iMax,numFases,numReles,nombreWB);
+      Serial.printf("strBrokerIP:%s userMqtt:%s passwMqtt:%s nombreWB:%s\r\n", strBrokerIP, userMqtt, passwMqtt, nombreWB);
       saveConfigFile(fs);
     }
     else
