@@ -97,7 +97,7 @@ void OnMqttReceived(char* topic, char* payload, AsyncMqttClientMessageProperties
 	if (!strcmp(topic,"homeassistant/status") && content.equals("online") && segArranque>100)
 	{
 		// se ha reiniciado home assistant, volvemos a conectar
-		Serial.printf("Reiniciado home assistant, volvemos a conectar\r\n");
+		Serial.printf("Reiniciado home assistant, volvemos a conectar a homeassistant\r\n");
 		conectaHA();
 		return;
 	}
@@ -124,8 +124,7 @@ void OnMqttConnect(bool sessionPresent)
 {
 	Serial.printf("Connected to MQTT. Session present: %d\r\n", sessionPresent);
 	SuscribeMqtt();
-//	conectaHA();
-
+	mqttClient.publish(topicAvail, 1, true, "online");
 	//mqttClient.setWill(const char* topic, uint8_t qos, bool retain, const char* payload = nullptr, size_t length = 0)
 }
 

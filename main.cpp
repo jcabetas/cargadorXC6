@@ -45,6 +45,11 @@ void parpadeoLed(uint8_t numVeces)
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED off
     vTaskDelay(pdMS_TO_TICKS(150));
   }
+  // // ponemos antena exterior
+  // pinMode(3, OUTPUT);    // RF switch power on
+  // digitalWrite(3, LOW);
+  // pinMode(14, OUTPUT);   // select external antenna
+  // digitalWrite(14, HIGH);
 }
 
 

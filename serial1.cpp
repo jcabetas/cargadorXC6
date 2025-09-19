@@ -80,11 +80,11 @@ void vLeerSerie(void* pvParametros) {
       //   Serial.printf("Pido a homeassistant actualizar pMax:%.1f\n", pMax);
       //   configuraPmax();
       // }
-      if (doc["imax"])
-      {
-        Serial.printf("Pido a homeassistant actualizar pMax:%.1f\n", pMax);
-        conectaHA();
-      }      // miro si hay que reconfigurar en homeassistant
+      // if (doc["imax"])
+      // {
+      //   Serial.printf("Pido a homeassistant actualizar pMax:%.1f y reconecto a homeassistant\n", pMax);
+      //   conectaHA();
+      // }      // miro si hay que reconfigurar en homeassistant
       if (doc["numfases"])
       {
         uint8_t numFasesSTM32 = atoi(doc["numfases"]);

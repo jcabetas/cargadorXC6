@@ -34,7 +34,8 @@ void conectaHA(void)
     JsonDocument doc;
 
     JsonObject dev = doc["dev"].to<JsonObject>();
-    dev["ids"] = "cargmqtt";
+    snprintf(buffer,sizeof(buffer),"carg%s",strChipId);
+    dev["ids"] = buffer;    //"cargKona";
     dev["name"] = nombreWB;
     dev["mf"] = "jcf";
     dev["mdl"] = "cargador MB mqtt";
@@ -193,10 +194,11 @@ void conectaHA(void)
 
     serializeJson(doc, buffer);
     // topic homeassistant/device/kona/cargmqtt/config
-    snprintf(topicConfig,sizeof(topicConfig),"homeassistant/device/%s/cargmqtt/config",nombreWB);
+    // ANTESsnprintf(topicConfig,sizeof(topicConfig),"homeassistant/device/%s/cargmqtt/config",nombreWB);
+    snprintf(topicConfig,sizeof(topicConfig),"homeassistant/device/%s/config",nombreWB);
     mqttClient.publish(topicConfig, 1, false, buffer);
     Serial.printf("Enviado configuración a homeassistant\r\n");
-    mqttClient.publish(topicAvail, 1, false, "online");
+    mqttClient.publish(topicAvail, 1, true, "online");
 }
 
 
@@ -240,5 +242,5 @@ void configuraPmax(void)
     snprintf(topicConfig,sizeof(topicConfig),"homeassistant/device/%s/cargmqtt/config",nombreWB);
     mqttClient.publish(topicConfig, 1, false, buffer);
     Serial.printf("Enviado configuración a homeassistant\r\n");
-    mqttClient.publish(topicAvail, 1, false, "online");
+    mqttClient.publish(topicAvail, 1, true, "online");
 }
